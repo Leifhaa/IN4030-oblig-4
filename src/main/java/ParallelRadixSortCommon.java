@@ -1,8 +1,9 @@
-public class ParallelRadixSortProperties {
+public class ParallelRadixSortCommon {
 
-    public ParallelRadixSortProperties(int nThreads, int useBits){
+    public ParallelRadixSortCommon(int nThreads, int useBits){
         this.maxCandidates = new int[nThreads];
         this.useBits = useBits;
+        this.allCount = new int[nThreads][];
     }
 
     /**
@@ -27,6 +28,16 @@ public class ParallelRadixSortProperties {
      */
     private int[] maxCandidates;
 
+    /**
+     * Counting of digits per thread
+     */
+    private int[][] allCount;
+
+    private int[] sumCount;
+
+    private int numOfPositions;
+
+
     public int getMaxValueBits() {
         return maxValueBits;
     }
@@ -47,8 +58,9 @@ public class ParallelRadixSortProperties {
         return maxCandidates;
     }
 
-    public void setMaxCandidates(int[] maxCandidates) {
-        this.maxCandidates = maxCandidates;
+
+    public void setMaxCandidate(int threadId, int cadidate){
+        this.maxCandidates[threadId] = cadidate;
     }
 
     public int getUseBits() {
@@ -57,5 +69,17 @@ public class ParallelRadixSortProperties {
 
     public void setUseBits(int useBits) {
         this.useBits = useBits;
+    }
+
+    public int getNumOfPositions() {
+        return numOfPositions;
+    }
+
+    public void setNumOfPositions(int numOfPositions) {
+        this.numOfPositions = numOfPositions;
+    }
+
+    public void incrementNumOfPositions(){
+        numOfPositions++;
     }
 }
