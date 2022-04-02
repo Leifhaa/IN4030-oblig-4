@@ -11,7 +11,6 @@ public class RadixSortWorker implements Runnable {
     private final CyclicBarrier workerBarrier;
     private int nThreads;
     private int tmpMax = 0;
-    int[] count;
 
     public RadixSortWorker(int threadId, int[] unsortedArray, int[] b, ParallelRadixSortCommon common, int readFromIndex, int readToIndex, CyclicBarrier workerBarrier, int nThreads) {
         this.threadId = threadId;
@@ -127,7 +126,6 @@ public class RadixSortWorker implements Runnable {
          * vil inneholde alle opptellingene fra alle trådene, slik: allCount[i] = count;
          */
         common.getAllCount()[threadId] = count;
-        common.setSumCount(count.length);
 
 
         //Synchronize
@@ -154,12 +152,13 @@ public class RadixSortWorker implements Runnable {
         if (threadId == 0) {
             int readFromElement = 0;
             int readFromColumn = 0;
-            int elementReadSize = common.getNumOfPositions() / nThreads;
+            common.sumCount = new int[common.getAllCount()[0].length];
+            int elementReadSize = common.sumCount.length / nThreads;
             int columnReadSize = common.getAllCount()[0].length / nThreads;
             for (int i = 0; i < nThreads; i++) {
                 int tmpReadElementSize = elementReadSize;
                 int tmpReadColumnSize = columnReadSize;
-                if (i < common.getNumOfPositions() % nThreads) {
+                if (i < common.sumCount.length % nThreads) {
                     tmpReadElementSize++;
                 }
                 if (i < common.getAllCount()[0].length % nThreads) {
@@ -190,13 +189,18 @@ public class RadixSortWorker implements Runnable {
         int readFromColumn = readRange[2];
         int readToColumn = readRange[3];
 
-        for (int i = 0; i < common.getAllCount().length; i++){
-            if (readFromColumn != readToColumn){
+
+        if (readFromColumn != readToColumn && readFromElement != readToElement){
+            for (int i = readFromElement; i < readToElement; i++){
                 for (int j = readFromColumn; j < readToColumn; j++){
-                    common.incrementSumBy(j, common.getAllCount()[i][j]);
+                    for (int k = 0; k < nThreads; k++){
+                        common.sumCount[j] += common.getAllCount()[k][j];
+                    }
                 }
             }
         }
+
+
 
         try {
             workerBarrier.await();
@@ -210,7 +214,7 @@ public class RadixSortWorker implements Runnable {
         //Step D
         for (int i = readFromIndex; i < readToIndex; i++) {
             int res = unsortedArray[i];
-            b[common.getSumCount()[(unsortedArray[i] >>> shift) & mask]++] = res;
+            b[common.sumCount[(unsortedArray[i] >>> shift) & mask]++] = res;
         }
 
 
