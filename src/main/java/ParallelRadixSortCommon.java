@@ -69,4 +69,8 @@ public class ParallelRadixSortCommon {
     public void incrementNumOfPositions(){
         numOfPositions++;
     }
+
+    public int[][] getAllCount() {
+        return allCount;
+    }
 }

@@ -30,12 +30,10 @@ public class RadixSortWorker implements Runnable {
     }
 
 
-
-
     private void findMax() {
         //Step 1. find max
-        for (int i = readFromIndex; i < readToIndex; i++){
-            if (unsortedArray[i] > tmpMax){
+        for (int i = readFromIndex; i < readToIndex; i++) {
+            if (unsortedArray[i] > tmpMax) {
                 tmpMax = unsortedArray[i];
             }
         }
@@ -48,10 +46,10 @@ public class RadixSortWorker implements Runnable {
             e.printStackTrace();
         }
         //All threads has found the max number for their range. Thread 0 will synchronize (suggested as good method in lecture 4)
-        if (threadId == 0){
+        if (threadId == 0) {
             int[] maxCandidates = common.getMaxCandidates();
-            for (int i = 0; i < maxCandidates.length; i++){
-                if (maxCandidates[i] > common.getMaxNumber()){
+            for (int i = 0; i < maxCandidates.length; i++) {
+                if (maxCandidates[i] > common.getMaxNumber()) {
                     common.setMaxNumber(maxCandidates[i]);
                 }
             }
@@ -89,6 +87,73 @@ public class RadixSortWorker implements Runnable {
 
 
     private void countOccurences() {
+
+        // Substep: Creating the mask and initialising the shift variable,
+        // both of whom are used to extract the digits.
+        int mask = (1 << common.getUseBits()) - 1;
+        int shift = 0;
+
+        //Each thread will count portion of the unsorted array
+        for (int i = 0; i < common.getNumOfPositions(); i++) {
+            countingSort(mask, shift);
+            shift += common.getUseBits();
+
+            //Todo
+            // Setting array a to be the array to be sorted again
+            //int[] temp = a;
+            //a = b;
+            //b = temp;
+        }
+
+        //Todo: Upload count to common data
+
+    }
+
+    private void countingSort(int mask, int shift) {
+        // STEP B : Count the number of occurrences of each digit in a specific position.
+        int[] count = new int[mask + 1];
+
+        for (int i = readFromIndex; i < readToIndex; i++) {
+            count[(unsortedArray[i] >> shift) & mask]++;
+        }
+
+
+        /**
+         * Når tråd i er ferdig med tellinga, henger den sin count[] opp i den doble int-arrayen som da
+         * vil inneholde alle opptellingene fra alle trådene, slik: allCount[i] = count;
+         */
+        common.getAllCount()[threadId] = count;
+
+
+        //Synchronize
+        try {
+            workerBarrier.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+
+        /**
+         * All threads finished counting. All threads has to calculate total per digit
+         * (Step C)
+         */
+
+        (Nå skal vi dele opp arrayen allCount[][] etter verdier i a[], slik at tråd0 får de n/k
+        første elementene i sumCount[] og de n/k første kolonnene i allCount[][] ,
+        tråd1 får de neste n/k elementene i sumCount[] og kolonnene i allCount[][] ,…, osv)
+
+
+        try {
+            workerBarrier.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+
+
+
 
     }
 }
