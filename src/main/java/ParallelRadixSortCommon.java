@@ -15,10 +15,6 @@ public class ParallelRadixSortCommon {
     private int useBits;
 
     /**
-     * number of bits that is needed to represent max value
-     */
-    private int maxValueBits = 1;
-    /**
      * Max digit in the unsorted array
      */
     private int maxNumber = 0;
@@ -36,15 +32,6 @@ public class ParallelRadixSortCommon {
     private int[] sumCount;
 
     private int numOfPositions;
-
-
-    public int getMaxValueBits() {
-        return maxValueBits;
-    }
-
-    public void setMaxValueBits(int maxValueBits) {
-        this.maxValueBits = maxValueBits;
-    }
 
     public int getMaxNumber() {
         return maxNumber;
