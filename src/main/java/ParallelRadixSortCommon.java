@@ -1,9 +1,13 @@
+import java.util.HashMap;
+
 public class ParallelRadixSortCommon {
 
     public ParallelRadixSortCommon(int nThreads, int useBits){
         this.maxCandidates = new int[nThreads];
         this.useBits = useBits;
         this.allCount = new int[nThreads][];
+        this.sumCount = new int[nThreads];
+        this.readings = new HashMap<>();
     }
 
     /**
@@ -36,6 +40,11 @@ public class ParallelRadixSortCommon {
     public int getMaxNumber() {
         return maxNumber;
     }
+
+    /**
+     * The range which each thread should sum from
+     */
+    public HashMap<Integer, int[]> readings;
 
     public void setMaxNumber(int maxNumber) {
         this.maxNumber = maxNumber;
@@ -72,5 +81,17 @@ public class ParallelRadixSortCommon {
 
     public int[][] getAllCount() {
         return allCount;
+    }
+
+    public int[] getSumCount() {
+        return sumCount;
+    }
+
+    public void addReadSize(int threadId,int fromElement, int toElement, int fromColumn, int toColumn){
+        this.readings.put(threadId, new int[]{fromElement,toElement, fromColumn, toColumn});
+    }
+
+    public int[] getReadSize(int threadId){
+        return this.readings.get(threadId);
     }
 }

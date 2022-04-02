@@ -3,21 +3,25 @@ import java.util.concurrent.CyclicBarrier;
 
 public class RadixSortWorker implements Runnable {
     private int threadId;
-    private final int[] unsortedArray;
+    private int[] unsortedArray;
+    private int[] b;
     private ParallelRadixSortCommon common;
     private final int readFromIndex;
     private final int readToIndex;
     private final CyclicBarrier workerBarrier;
+    private int nThreads;
     private int tmpMax = 0;
     int[] count;
 
-    public RadixSortWorker(int threadId, int[] unsortedArray, ParallelRadixSortCommon common, int readFromIndex, int readToIndex, CyclicBarrier workerBarrier) {
+    public RadixSortWorker(int threadId, int[] unsortedArray, int[] b, ParallelRadixSortCommon common, int readFromIndex, int readToIndex, CyclicBarrier workerBarrier, int nThreads) {
         this.threadId = threadId;
+        this.b = b;
         this.unsortedArray = unsortedArray;
         this.common = common;
         this.readFromIndex = readFromIndex;
         this.readToIndex = readToIndex;
         this.workerBarrier = workerBarrier;
+        this.nThreads = nThreads;
     }
 
     @Override
@@ -137,11 +141,64 @@ public class RadixSortWorker implements Runnable {
         /**
          * All threads finished counting. All threads has to calculate total per digit
          * (Step C)
+         *
+         *
+         * Nå skal vi dele opp arrayen allCount[][] etter verdier i a[], slik at tråd0 får de n/k
+         * første elementene i sumCount[] og de n/k første kolonnene i allCount[][] ,
+         * tråd1 får de neste n/k elementene i sumCount[] og kolonnene i allCount[][] ,…, osv.
+         *
          */
 
-        (Nå skal vi dele opp arrayen allCount[][] etter verdier i a[], slik at tråd0 får de n/k
-        første elementene i sumCount[] og de n/k første kolonnene i allCount[][] ,
-        tråd1 får de neste n/k elementene i sumCount[] og kolonnene i allCount[][] ,…, osv)
+        //Begin by dividing which thread should read which part of array
+        if (threadId == 0) {
+            int readFromElement = 0;
+            int readFromColumn = 0;
+            int elementReadSize = common.getNumOfPositions() / nThreads;
+            int columnReadSize = common.getAllCount()[0].length / nThreads;
+            for (int i = 0; i < nThreads; i++) {
+                int tmpReadElementSize = elementReadSize;
+                int tmpReadColumnSize = columnReadSize;
+                if (i < common.getNumOfPositions() % nThreads) {
+                    tmpReadElementSize++;
+                }
+                if (i < common.getAllCount()[0].length % nThreads) {
+                    tmpReadColumnSize++;
+                }
+
+                common.addReadSize(i, readFromElement, readFromElement + tmpReadElementSize, readFromColumn, readFromColumn + tmpReadColumnSize);
+                readFromElement += tmpReadElementSize;
+                readFromColumn += tmpReadColumnSize;
+            }
+        }
+
+        //Synchronize
+        try {
+            workerBarrier.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+
+        /**
+         * Hver trådi summerer så tallene i alle sine kolonner ‘j’ fra allCount[0..antTråder1][j] til sumCount[j].
+         */
+        int[] readRange = common.getReadSize(threadId);
+        int readFromElement = readRange[0];
+        int readToElement = readRange[1];
+        int readFromColumn = readRange[2];
+        int readToColumn = readRange[3];
+
+        for (int i = 0; i < common.getAllCount().length; i++){
+            if (readFromColumn != readToColumn){
+                for (int j = readFromColumn; j < readToColumn; j++){
+                    common.getSumCount()[j] += common.getAllCount()[i][j];
+                }
+            }
+        }
+
+
+        System.out.println("Hello world");
 
 
         try {
@@ -153,7 +210,20 @@ public class RadixSortWorker implements Runnable {
         }
 
 
+        //Step D
+        for (int i = readFromIndex; i < readToIndex; i++) {
+            b[common.getSumCount()[(unsortedArray[i] >>> shift) & mask]++] = unsortedArray[i];
+        }
 
+
+        System.out.println("Hello world");
+        try {
+            workerBarrier.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
 
     }
 }
