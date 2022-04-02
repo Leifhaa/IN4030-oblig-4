@@ -6,7 +6,6 @@ public class ParallelRadixSortCommon {
         this.maxCandidates = new int[nThreads];
         this.useBits = useBits;
         this.allCount = new int[nThreads][];
-        this.sumCount = new int[nThreads];
         this.readings = new HashMap<>();
     }
 
@@ -73,6 +72,7 @@ public class ParallelRadixSortCommon {
 
     public void setNumOfPositions(int numOfPositions) {
         this.numOfPositions = numOfPositions;
+        this.sumCount = new int[numOfPositions];
     }
 
     public void incrementNumOfPositions(){
@@ -83,8 +83,20 @@ public class ParallelRadixSortCommon {
         return allCount;
     }
 
-    public int[] getSumCount() {
-        return sumCount;
+    public void setSum(int index, int value){
+        sumCount[index] = value;
+    }
+
+    public int getSum(int index){
+        return sumCount[index];
+    }
+
+    public void setSumCount(int size){
+        this.sumCount = new int[size];
+    }
+
+    public void incrementSumBy(int index, int amount){
+        this.sumCount[index] += amount;
     }
 
     public void addReadSize(int threadId,int fromElement, int toElement, int fromColumn, int toColumn){

@@ -102,12 +102,12 @@ public class RadixSortWorker implements Runnable {
             countingSort(mask, shift);
             shift += common.getUseBits();
 
-            //Todo
-            // Setting array a to be the array to be sorted again
-            //int[] temp = a;
-            //a = b;
-            //b = temp;
+            int[] temp = unsortedArray;
+            unsortedArray = b;
+            b = temp;
         }
+
+        System.out.println("Hello world");
 
         //Todo: Upload count to common data
 
@@ -127,6 +127,7 @@ public class RadixSortWorker implements Runnable {
          * vil inneholde alle opptellingene fra alle trådene, slik: allCount[i] = count;
          */
         common.getAllCount()[threadId] = count;
+        common.setSumCount(count.length);
 
 
         //Synchronize
@@ -192,14 +193,10 @@ public class RadixSortWorker implements Runnable {
         for (int i = 0; i < common.getAllCount().length; i++){
             if (readFromColumn != readToColumn){
                 for (int j = readFromColumn; j < readToColumn; j++){
-                    common.getSumCount()[j] += common.getAllCount()[i][j];
+                    common.incrementSumBy(j, common.getAllCount()[i][j]);
                 }
             }
         }
-
-
-        System.out.println("Hello world");
-
 
         try {
             workerBarrier.await();
@@ -212,11 +209,11 @@ public class RadixSortWorker implements Runnable {
 
         //Step D
         for (int i = readFromIndex; i < readToIndex; i++) {
-            b[common.getSumCount()[(unsortedArray[i] >>> shift) & mask]++] = unsortedArray[i];
+            int res = unsortedArray[i];
+            b[common.getSumCount()[(unsortedArray[i] >>> shift) & mask]++] = res;
         }
 
 
-        System.out.println("Hello world");
         try {
             workerBarrier.await();
         } catch (InterruptedException e) {
