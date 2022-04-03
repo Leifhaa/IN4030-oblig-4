@@ -1,3 +1,5 @@
+package src;
+
 import java.io.PrintWriter;
 import java.util.Random;
 
@@ -14,12 +16,12 @@ import java.util.Random;
  *
  * To get the array you are going to sort:
  * --
- * int[] arr = Oblig4Precode.generateArray(n, seed);
+ * int[] arr = src.Oblig4Precode.generateArray(n, seed);
  * --
  *
  * When you are done sorting, call this method to save some of your results:
  * --
- * Oblig4Precode.saveResults(Oblig4Precode.Algorithm.SEQ, seed, arr);
+ * src.Oblig4Precode.saveResults(src.Oblig4Precode.Algorithm.SEQ, seed, arr);
  * --
  *
  * Please ask questions in Astro-Discourse or by mail.

@@ -1,3 +1,5 @@
+package src;
+
 import java.util.Arrays;
 
 public class MainParallelSort {
@@ -18,7 +20,7 @@ public class MainParallelSort {
             nThreads = Integer.parseInt(args[3]);
         } catch (Exception e) {
 
-            System.out.println("Correct usage is: java MainParallelSort <n> <seed> <useBits> <threads>");
+            System.out.println("Correct usage is: java -cp target/IN4030-oblig-4-1.0-SNAPSHOT.jar src.MainParallelSort <n> <seed> <useBits> <threads>");
             return;
         }
         if (nThreads == 0) {
@@ -81,8 +83,8 @@ public class MainParallelSort {
 
         double seqMedian = seqTimes[(seqTimes.length) / 2];
         double paraMedian = paraTimes[(paraTimes.length) / 2];
-        System.out.println("Median time of sequential run: " + seqMedian );
-        System.out.println("Median time of paralell run: " + paraMedian );
+        System.out.println("Median time of sequential run: " + seqMedian + "ms" );
+        System.out.println("Median time of paralell run: " + paraMedian + "ms" );
         System.out.println("Total speedup: " + seqMedian / paraMedian + " for number " + n);
     }
 }

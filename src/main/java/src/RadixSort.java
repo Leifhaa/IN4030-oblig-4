@@ -1,13 +1,15 @@
+package src;
+
 import java.util.Arrays;
 
-class RadixSort {
+public class RadixSort {
 
   // The number of bits used to represent a single digit
   int useBits;
   int[] a, b, digitFrequencies, digitPointers;
 
 
-  RadixSort(int useBits) {
+  public RadixSort(int useBits) {
     this.useBits = useBits;
   }
 
@@ -34,7 +36,7 @@ class RadixSort {
   }
 
   // Radix sort. Uses counting sort for each position.
-  int[] radixSort(int[] unsortedArray) {
+  public int[] radixSort(int[] unsortedArray) {
 
     a = unsortedArray;
     b = new int[a.length];
@@ -99,7 +101,7 @@ class RadixSort {
 
     } catch (Exception e) {
 
-      System.out.println("Correct usage is: java RadixSort <n> <seed> <useBits>");
+      System.out.println("Correct usage is: java src.RadixSort <n> <seed> <useBits>");
       return;
 
     }

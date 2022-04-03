@@ -1,0 +1,2 @@
+JMH S 14 src.Benchmarks S 49 src.jmh_generated.Benchmarks_testParallel_jmhTest S 12 testParallel S 11 AverageTime E A 1 1 1 E I 1 1 E E I 1 3 E E I 1 1 E E E E E E U 7 SECONDS E E 
+JMH S 14 src.Benchmarks S 51 src.jmh_generated.Benchmarks_testSequential_jmhTest S 14 testSequential S 11 AverageTime E A 1 1 1 E I 1 1 E E I 1 3 E E I 1 1 E E E E E E U 7 SECONDS E E 

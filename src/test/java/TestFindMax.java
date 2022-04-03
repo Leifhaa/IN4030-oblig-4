@@ -1,5 +1,8 @@
 import org.junit.Assert;
 import org.junit.Test;
+import src.Oblig4Precode;
+import src.ParallelRadixSort;
+import src.RadixSort;
 
 import java.util.Arrays;
 
