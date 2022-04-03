@@ -11,7 +11,6 @@ public class ParallelRadixSort {
      * Number of threads used to sort
      */
     private int nThreads;
-    private CyclicBarrier mainBarrier;
     private CyclicBarrier workerBarrier;
 
     RadixSortWorker[] workers;
@@ -22,7 +21,6 @@ public class ParallelRadixSort {
         this.nThreads = nThreads;
         this.unsortedArray = unsortedArray;
         this.common = new ParallelRadixSortCommon(nThreads, useBits);
-        this.mainBarrier = new CyclicBarrier(nThreads + 1);
         this.workerBarrier = new CyclicBarrier(nThreads);
         this.workers = new RadixSortWorker[nThreads];
         this.t = new Thread[nThreads];
@@ -53,7 +51,7 @@ public class ParallelRadixSort {
 
         for (int i = 0; i < nThreads; i++){
             try {
-                t[1].join();
+                t[i].join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
