@@ -50,12 +50,17 @@ public class ParallelRadixSort {
             readFrom += tmpReadSize;
         }
 
-        try {
-            mainBarrier.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (BrokenBarrierException e) {
-            e.printStackTrace();
+
+        for (int i = 0; i < nThreads; i++){
+            try {
+                t[1].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    public int[] getResult(){
+        return this.unsortedArray;
     }
 }

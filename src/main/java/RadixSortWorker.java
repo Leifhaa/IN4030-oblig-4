@@ -29,7 +29,7 @@ public class RadixSortWorker implements Runnable {
         findMax();
 
         //Step 2. Count the different digit's in the array
-        countOccurences();
+        radixsort();
     }
 
 
@@ -89,7 +89,7 @@ public class RadixSortWorker implements Runnable {
     }
 
 
-    private void countOccurences() {
+    private void radixsort() {
 
         // Substep: Creating the mask and initialising the shift variable,
         // both of whom are used to extract the digits.
@@ -109,9 +109,6 @@ public class RadixSortWorker implements Runnable {
         if (threadId == 0) {
             System.arraycopy(unsortedArray, 0, b, 0, unsortedArray.length);
         }
-
-        System.out.println("TODO");
-        System.out.println("Hello world");
     }
 
     private void radixSort(int mask, int shift) {
