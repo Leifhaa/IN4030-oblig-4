@@ -190,10 +190,10 @@ public class RadixSortWorker implements Runnable {
         int readToColumn = readRange[3];
 
 
-        if (readFromColumn != readToColumn && readFromElement != readToElement){
-            for (int i = readFromElement; i < readToElement; i++){
-                for (int j = readFromColumn; j < readToColumn; j++){
-                    for (int k = 0; k < nThreads; k++){
+        if (readFromColumn != readToColumn && readFromElement != readToElement) {
+            for (int i = readFromElement; i < readToElement; i++) {
+                for (int j = readFromColumn; j < readToColumn; j++) {
+                    for (int k = 0; k < nThreads; k++) {
                         common.sumCount[j] += common.getAllCount()[k][j];
                     }
                 }
@@ -210,11 +210,11 @@ public class RadixSortWorker implements Runnable {
         }
 
         //Create digit pointers.
-        if (threadId == 0){
+        if (threadId == 0) {
             int sum = 0;
             common.digitPointers = new int[nThreads][mask + 1];
-            for (int i = 0; i < count.length; i++){
-                for (int j = 0; j < nThreads; j++){
+            for (int i = 0; i < count.length; i++) {
+                for (int j = 0; j < nThreads; j++) {
                     common.digitPointers[j][i] = sum;
                     sum += common.getAllCount()[j][i];
                 }
@@ -236,7 +236,9 @@ public class RadixSortWorker implements Runnable {
         int[] digitalPointer = common.digitPointers[threadId];
         for (int i = readFromIndex; i < readToIndex; i++) {
             int res = unsortedArray[i];
-            b[digitalPointer[(unsortedArray[i] >>> shift) & mask]++] = res;
+            int pointerIdx = (unsortedArray[i] >>> shift) & mask;
+            int target = digitalPointer[pointerIdx]++;
+            b[target] = res;
         }
 
 

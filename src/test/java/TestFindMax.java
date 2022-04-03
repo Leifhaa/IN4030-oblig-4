@@ -25,6 +25,16 @@ public class TestFindMax {
     }
 
 
+    @Test
+    public void TestRadixSortParallelFoo() {
+        int threads = Runtime.getRuntime().availableProcessors();
+
+        int[] intArray = new int[]{ 6, 3, 5, 1, 2, 9};
+        ParallelRadixSort parallelRadixSort = new ParallelRadixSort(4, 2, intArray);
+        parallelRadixSort.sort();
+    }
+
+
 
     @Test
     public void testSpeedSeq(){
