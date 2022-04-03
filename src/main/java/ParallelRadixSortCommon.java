@@ -35,7 +35,7 @@ public class ParallelRadixSortCommon {
     private int numOfPositions;
 
     public int[] sumCount;
-    public int[] digitPointer;
+    public int[][] digitPointers;
 
     public int getMaxNumber() {
         return maxNumber;

@@ -127,7 +127,6 @@ public class RadixSortWorker implements Runnable {
          * vil inneholde alle opptellingene fra alle trådene, slik: allCount[i] = count;
          */
         common.getAllCount()[threadId] = count;
-        int[] localDigitPointer = new int[count.length];
 
 
         //Synchronize
@@ -213,15 +212,11 @@ public class RadixSortWorker implements Runnable {
 
         //Create digit pointers.
         if (threadId == 0){
-            common.digitPointer = new int[mask + 1];
-            for (int i = 0; i < common.sumCount.length - 1; i++) {
-                common.digitPointer[i + 1] = common.digitPointer[i] + common.sumCount[i];
-            }
-
             int sum = 0;
-            for (int i = 0; i < count.length; i++) {
-                for (int j = 0; j < nThreads; j++) {
-                    allDigitPointers[j][i] = sum;
+            common.digitPointers = new int[nThreads][mask + 1];
+            for (int i = 0; i < count.length; i++){
+                for (int j = 0; j < nThreads; j++){
+                    common.digitPointers[j][i] = sum;
                     sum += common.getAllCount()[j][i];
                 }
             }
@@ -239,9 +234,10 @@ public class RadixSortWorker implements Runnable {
 
 
         //Step D
+        int[] digitalPointer = common.digitPointers[threadId];
         for (int i = readFromIndex; i < readToIndex; i++) {
             int res = unsortedArray[i];
-            b[common.digitPointer[(unsortedArray[i] >> shift) & mask]++] = res;
+            b[digitalPointer[(unsortedArray[i] >>> shift) & mask]++] = res;
         }
 
 
