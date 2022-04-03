@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.SECONDS)
 public class Benchmarks {
-    private static int n = 100_000_0;
+    private static int n = 100_000_00;
     private static int seed = 1;
     private static int bits = 8;
 
