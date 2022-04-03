@@ -98,7 +98,7 @@ public class RadixSortWorker implements Runnable {
 
         //Each thread will count portion of the unsorted array
         for (int i = 0; i < common.getNumOfPositions(); i++) {
-            countingSort(mask, shift);
+            radixSort(mask, shift);
             shift += common.getUseBits();
 
             int[] temp = unsortedArray;
@@ -106,13 +106,15 @@ public class RadixSortWorker implements Runnable {
             b = temp;
         }
 
+        if (threadId == 0) {
+            System.arraycopy(unsortedArray, 0, b, 0, unsortedArray.length);
+        }
+
+        System.out.println("TODO");
         System.out.println("Hello world");
-
-        //Todo: Upload count to common data
-
     }
 
-    private void countingSort(int mask, int shift) {
+    private void radixSort(int mask, int shift) {
         // STEP B : Count the number of occurrences of each digit in a specific position.
         int[] count = new int[mask + 1];
 
@@ -120,12 +122,12 @@ public class RadixSortWorker implements Runnable {
             count[(unsortedArray[i] >> shift) & mask]++;
         }
 
-
         /**
          * Når tråd i er ferdig med tellinga, henger den sin count[] opp i den doble int-arrayen som da
          * vil inneholde alle opptellingene fra alle trådene, slik: allCount[i] = count;
          */
         common.getAllCount()[threadId] = count;
+        int[] localDigitPointer = new int[count.length];
 
 
         //Synchronize
@@ -200,8 +202,33 @@ public class RadixSortWorker implements Runnable {
             }
         }
 
+        //Synchronize
+        try {
+            workerBarrier.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+
+        //Create digit pointers.
+        if (threadId == 0){
+            common.digitPointer = new int[mask + 1];
+            for (int i = 0; i < common.sumCount.length - 1; i++) {
+                common.digitPointer[i + 1] = common.digitPointer[i] + common.sumCount[i];
+            }
+
+            int sum = 0;
+            for (int i = 0; i < count.length; i++) {
+                for (int j = 0; j < nThreads; j++) {
+                    allDigitPointers[j][i] = sum;
+                    sum += common.getAllCount()[j][i];
+                }
+            }
+        }
 
 
+        //Synchronize
         try {
             workerBarrier.await();
         } catch (InterruptedException e) {
@@ -214,7 +241,7 @@ public class RadixSortWorker implements Runnable {
         //Step D
         for (int i = readFromIndex; i < readToIndex; i++) {
             int res = unsortedArray[i];
-            b[common.sumCount[(unsortedArray[i] >>> shift) & mask]++] = res;
+            b[common.digitPointer[(unsortedArray[i] >> shift) & mask]++] = res;
         }
 
 
